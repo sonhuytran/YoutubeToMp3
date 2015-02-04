@@ -14,6 +14,9 @@ namespace YouTube
 {
     public static class YoutubeService
     {
+        public static readonly string YOUTUBE_SINGLE_VIDEO_PREFIX = "https://www.youtube.com/watch?v=";
+        public static readonly string YOUTUBE_PLAYLIST_PREFIX = "https://www.youtube.com/playlist?list=";
+
         private const string URL_PATTERN = "<meta property=\"og:url\" content=\"(.*)\">";
         private const string TITLE_PATTERN = "<meta property=\"og:title\" content=\"(.*)\">";
         private const string DESCRIPTION_PATTERN = "<meta property=\"og:description\" content=\"(.*)\">";
@@ -21,7 +24,23 @@ namespace YouTube
 
         //[Begin] iVision
         private const string PLAYLIST_URL_PATTERN = "<a class=\"pl-video-title-link yt-uix-tile-link yt-uix-sessionlink  spf-link \" dir=\"ltr\" href=\"(.*)\" data-sessionlink";
-        
+
+        public static bool isSingleVideoUrl(string url)
+        {
+            return url.StartsWith(YOUTUBE_SINGLE_VIDEO_PREFIX);
+        }
+
+        public static bool isPlaylistUrl(string url)
+        {
+            return url.StartsWith(YOUTUBE_PLAYLIST_PREFIX);
+        }
+
+        public static bool isValidYouTubeUrl(string url)
+        {
+            return isSingleVideoUrl(url)
+                || isPlaylistUrl(url);
+        }
+
         //Modified: Remove duplicate code
         public static async Task<AudioInformation> FetchAudioInformation(string URL)
         {
@@ -52,7 +71,7 @@ namespace YouTube
                 return await httpClient.GetStringAsync(URL);
         }
         //[End]
-        
+
         private static async Task<AudioInformation> ParseVideoFromHTML(string html)
         {
             try
@@ -71,7 +90,7 @@ namespace YouTube
 
                 // Separate the JSON string, which is what we need for the download URLs and qualities
                 string jsonString = html.Split(new[] { "ytplayer.config = " }, StringSplitOptions.None)[1];
-                jsonString = jsonString.Split(new []{"};"}, StringSplitOptions.None)[0] + "}";
+                jsonString = jsonString.Split(new[] { "};" }, StringSplitOptions.None)[0] + "}";
 
                 // Parse video information from the JSON
                 dynamic json = new JavaScriptSerializer().Deserialize<object>(jsonString);
@@ -86,7 +105,7 @@ namespace YouTube
                     if (!stream.Contains("itag=")) continue;
 
                     string formatString = Uri.UnescapeDataString(ParseFieldFromQueryString("type", stream));
-                    if(!IsAudio(formatString)) continue;
+                    if (!IsAudio(formatString)) continue;
 
                     string videoURL = Uri.UnescapeDataString(ParseFieldFromQueryString("url", stream));
                     string itag = Uri.UnescapeDataString(ParseFieldFromQueryString("itag", stream));
@@ -94,7 +113,7 @@ namespace YouTube
                     FileFormat format = ParseFormat(formatString);
 
                     Tuple<FileFormat, AudioBitrate> qualityTuple = Tuple.Create(format, bitrate);
-                    if(!availableQualities.ContainsKey(qualityTuple)) availableQualities.Add(qualityTuple, videoURL);
+                    if (!availableQualities.ContainsKey(qualityTuple)) availableQualities.Add(qualityTuple, videoURL);
 
                 }
 
