@@ -44,7 +44,8 @@ namespace YouTube
 
         public override string ToString()
         {
-            return string.Format("URL: {0}\nTitle: {1}\nDescription: {2}\nKeywords: {3}\nThumbnail: {4}", URL, Title, Description, string.Join(", ", Keywords), Thumbnail);
+            return string.Format("URL: {0}\nTitle: {1}\nDescription: {2}\nKeywords: {3}\nThumbnail: {4}",
+                URL, Title, Description, string.Join(", ", Keywords), Thumbnail);
         }
 
         public int CompareTo(AudioInformation other)
