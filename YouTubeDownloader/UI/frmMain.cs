@@ -84,7 +84,10 @@ namespace YouTubeDownloader.UI
 
         private void frmMain_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.V && e.Control) addURLfromClipboard();
+            if (e.KeyCode == Keys.V && e.Control)
+            {
+                addURLfromClipboard();
+            }                
         }
 
         private void btnAddVideo_Click(object sender, EventArgs e)
