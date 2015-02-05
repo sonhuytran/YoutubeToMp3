@@ -42,6 +42,7 @@ namespace YouTube
             audioInProgress = audioInformation;
 
             var downloadLink = audioInformation.GetDownloadURL(format, bitrate);
+            webClient.Credentials = new System.Net.NetworkCredential("sonhuytran@gmail.com", "mEOmAPmEOmAP1881@");
             webClient.DownloadFileAsync(new Uri(downloadLink), destinationFileName);
         }
 
